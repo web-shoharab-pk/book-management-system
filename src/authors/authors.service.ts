@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  HttpStatus,
   Inject,
   Injectable,
   NotFoundException,
@@ -11,6 +12,14 @@ import { BooksService } from '../books/books.service';
 import { CreateAuthorDto } from './dto/create-author.dto';
 import { UpdateAuthorDto } from './dto/update-author.dto';
 import { Author } from './schemas/author.schema';
+
+export class PaginationDto {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  totalItems: number;
+}
 
 @Injectable()
 export class AuthorsService {
@@ -29,7 +38,7 @@ export class AuthorsService {
     page?: number;
     limit?: number;
     search?: string;
-  }): Promise<Author[]> {
+  }): Promise<{ authors: Author[]; pagination: PaginationDto }> {
     const { page = 1, limit = 10, search } = query;
     const skip = (page - 1) * limit;
     let filter = {};
@@ -41,7 +50,24 @@ export class AuthorsService {
         ],
       };
     }
-    return this.authorModel.find(filter).skip(skip).limit(limit).exec();
+    const pagination = {
+      page,
+      limit,
+      total: await this.authorModel.countDocuments(filter),
+      totalPages: Math.ceil(
+        (await this.authorModel.countDocuments(filter)) / limit,
+      ),
+      totalItems: await this.authorModel.countDocuments(filter),
+    };
+    const authors = await this.authorModel
+      .find(filter)
+      .skip(skip)
+      .limit(limit)
+      .exec();
+    return {
+      authors,
+      pagination,
+    };
   }
 
   async findOne(id: string): Promise<Author> {
@@ -62,7 +88,9 @@ export class AuthorsService {
     return author;
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(
+    id: string,
+  ): Promise<{ statusCode: HttpStatus; success: boolean; message: string }> {
     const books = await this.booksService.findByAuthorId(id);
     if (books.length > 0) {
       throw new ConflictException('Cannot delete author with associated books');
@@ -71,5 +99,11 @@ export class AuthorsService {
     if (!result) {
       throw new NotFoundException('Author not found');
     }
+    console.log('result', result, id);
+    return {
+      statusCode: HttpStatus.OK,
+      success: true,
+      message: 'Author deleted successfully',
+    };
   }
 }

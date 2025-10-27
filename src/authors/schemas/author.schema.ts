@@ -16,4 +16,10 @@ export class Author extends Document {
   birthDate?: Date;
 }
 
-export const AuthorSchema = SchemaFactory.createForClass(Author);
+const AuthorSchema = SchemaFactory.createForClass(Author);
+
+AuthorSchema.virtual('id').get(function (this: Author) {
+  return this._id;
+});
+
+export { AuthorSchema };
