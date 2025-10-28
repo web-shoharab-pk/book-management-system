@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { AuthorsService } from '../authors/authors.service';
+import { AuthorsService, PaginationDto } from '../authors/authors.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { Book } from './schemas/book.schema';
@@ -24,7 +24,7 @@ export class BooksService {
     await this.validateAuthor(createBookDto.authorId);
     const book = new this.bookModel({
       ...createBookDto,
-      author: createBookDto.authorId,
+      author: new Types.ObjectId(createBookDto.authorId),
     });
     const savedBook = await book.save();
     return await savedBook.populate('author');
@@ -35,7 +35,10 @@ export class BooksService {
     limit?: number;
     search?: string;
     authorId?: string;
-  }): Promise<(Book & { author: any })[]> {
+  }): Promise<{
+    books: (Book & { author: any })[];
+    pagination: PaginationDto;
+  }> {
     const { page = 1, limit = 10, search, authorId } = query;
     const skip = (page - 1) * limit;
     const filter: any = {};
@@ -48,13 +51,25 @@ export class BooksService {
     if (authorId) {
       filter.author = new Types.ObjectId(authorId);
     }
-    const books = await this.bookModel
-      .find(filter)
-      .populate('author')
-      .skip(skip)
-      .limit(limit)
-      .exec();
-    return books;
+    const [books, totalItems] = await Promise.all([
+      this.bookModel
+        .find(filter)
+        .populate('author')
+        .skip(skip)
+        .limit(limit)
+        .exec(),
+      this.bookModel.countDocuments(filter),
+    ]);
+
+    return {
+      books,
+      pagination: {
+        page,
+        limit,
+        totalPages: Math.ceil(totalItems / limit),
+        totalItems,
+      },
+    };
   }
 
   async findOne(id: string): Promise<Book & { author: any }> {

@@ -26,6 +26,20 @@ interface ValidationError {
   message: string;
 }
 
+// Mongo duplicate key error (E11000) shape from MongoServerError/Mongoose
+interface MongoDuplicateKeyError {
+  code: number; // 11000
+  keyPattern?: Record<string, unknown>;
+  keyValue?: Record<string, unknown>;
+  errmsg?: string;
+  errorResponse?: {
+    code?: number;
+    keyPattern?: Record<string, unknown>;
+    keyValue?: Record<string, unknown>;
+    errmsg?: string;
+  };
+}
+
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
@@ -55,6 +69,18 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       });
     }
 
+    // Handle Mongo duplicate key (E11000) errors
+    if (this.isMongoDuplicateKeyError(exception)) {
+      const errors = this.extractMongoDuplicateKeyErrors(exception);
+      return response.status(HttpStatus.CONFLICT).json({
+        statusCode: HttpStatus.CONFLICT,
+        message: 'Duplicate key error',
+        errors,
+        timestamp: new Date().toISOString(),
+        path: request.url,
+      });
+    }
+
     // Handle HttpException (includes class-validator errors)
     if (exception instanceof HttpException) {
       const status = exception.getStatus();
@@ -65,10 +91,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         typeof exceptionResponse === 'object' &&
         'message' in exceptionResponse
       ) {
-        const messages = Array.isArray(exceptionResponse.message)
-          ? exceptionResponse.message
-          : [exceptionResponse.message];
-
         const errors: ValidationError[] = Array.isArray(
           exceptionResponse.message,
         )
@@ -84,7 +106,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
         return response.status(status).json({
           statusCode: status,
-          message: String(messages[0]),
+          message: 'Validation error',
           errors,
           timestamp: new Date().toISOString(),
           path: request.url,
@@ -196,13 +218,83 @@ export class GlobalExceptionFilter implements ExceptionFilter {
   private transformClassValidatorErrors(messages: string[]): ValidationError[] {
     return messages.map((message: string) => {
       // Parse class-validator error messages
-      // Format: "property fieldName should be..." or similar
-      const fieldMatch = message.match(/^property ([\w]+) should be/);
+      // Format: "fieldName must be..." or "fieldName should be..." or "property fieldName should be..."
+      // Try multiple patterns to match different class-validator error formats
+      const fieldMatch =
+        message.match(/^([a-zA-Z_]\w*)\s+(must|should) be/) ||
+        message.match(/^property\s+([\w]+)\s+should be/);
       const field = fieldMatch ? fieldMatch[1] : 'general';
 
       return {
         field,
         message,
+      };
+    });
+  }
+
+  private isMongoDuplicateKeyError(
+    error: unknown,
+  ): error is MongoDuplicateKeyError {
+    if (typeof error !== 'object' || error === null) return false;
+    const maybe = error as MongoDuplicateKeyError & { code?: number };
+    const rootCode = maybe.code;
+    const nestedCode = maybe.errorResponse?.code;
+    return rootCode === 11000 || nestedCode === 11000;
+  }
+
+  private extractMongoDuplicateKeyErrors(
+    error: MongoDuplicateKeyError,
+  ): ValidationError[] {
+    const keyPattern: Record<string, unknown> =
+      error.keyPattern || error.errorResponse?.keyPattern || {};
+    const keyValue: Record<string, unknown> =
+      error.keyValue || error.errorResponse?.keyValue || {};
+
+    const fields = Object.keys(keyPattern);
+    if (fields.length === 0 && error.errmsg) {
+      // Fallback: parse field from errmsg like "index: isbn_1 dup key: { isbn: \"value\" }"
+      const match = error.errmsg.match(/\{\s*(\w+)\s*:\s*"?([^"}]+)"?\s*\}/);
+      if (match) {
+        const field = match[1];
+        const value = match[2];
+        return [
+          {
+            field,
+            message: `${this.formatFieldName(field)} must be unique. Duplicate value: ${value}.`,
+          },
+        ];
+      }
+    }
+
+    if (fields.length === 0) {
+      return [
+        {
+          field: 'general',
+          message: 'Duplicate value violates a unique constraint.',
+        },
+      ];
+    }
+
+    return fields.map((field) => {
+      const value = keyValue[field];
+      const renderedValue = (() => {
+        if (value === null || value === undefined) return undefined;
+        if (typeof value === 'string') return value;
+        if (typeof value === 'number' || typeof value === 'boolean') {
+          return String(value);
+        }
+        try {
+          return JSON.stringify(value);
+        } catch {
+          return '[unserializable]';
+        }
+      })();
+      const valueText = renderedValue
+        ? ` Duplicate value: ${renderedValue}.`
+        : '';
+      return {
+        field,
+        message: `${this.formatFieldName(field)} must be unique.${valueText}`,
       };
     });
   }

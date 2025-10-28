@@ -1,6 +1,5 @@
 import {
   ConflictException,
-  HttpStatus,
   Inject,
   Injectable,
   NotFoundException,
@@ -16,7 +15,7 @@ import { Author } from './schemas/author.schema';
 export class PaginationDto {
   page: number;
   limit: number;
-  total: number;
+  total?: number;
   totalPages: number;
   totalItems: number;
 }
@@ -50,20 +49,16 @@ export class AuthorsService {
         ],
       };
     }
+    const [totalItems, authors] = await Promise.all([
+      this.authorModel.countDocuments(filter),
+      this.authorModel.find(filter).skip(skip).limit(limit).exec(),
+    ]);
     const pagination = {
       page,
       limit,
-      total: await this.authorModel.countDocuments(filter),
-      totalPages: Math.ceil(
-        (await this.authorModel.countDocuments(filter)) / limit,
-      ),
-      totalItems: await this.authorModel.countDocuments(filter),
+      totalPages: Math.ceil(totalItems / limit),
+      totalItems,
     };
-    const authors = await this.authorModel
-      .find(filter)
-      .skip(skip)
-      .limit(limit)
-      .exec();
     return {
       authors,
       pagination,
@@ -88,9 +83,7 @@ export class AuthorsService {
     return author;
   }
 
-  async remove(
-    id: string,
-  ): Promise<{ statusCode: HttpStatus; success: boolean; message: string }> {
+  async remove(id: string): Promise<void> {
     const books = await this.booksService.findByAuthorId(id);
     if (books.length > 0) {
       throw new ConflictException('Cannot delete author with associated books');
@@ -99,11 +92,5 @@ export class AuthorsService {
     if (!result) {
       throw new NotFoundException('Author not found');
     }
-    console.log('result', result, id);
-    return {
-      statusCode: HttpStatus.OK,
-      success: true,
-      message: 'Author deleted successfully',
-    };
   }
 }
