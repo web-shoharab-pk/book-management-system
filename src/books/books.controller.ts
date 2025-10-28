@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
+import { QueryBooksDto } from './dto/query-books.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 
 @Controller('books')
@@ -23,13 +24,8 @@ export class BooksController {
   }
 
   @Get()
-  findAll(
-    @Query('page') page: number,
-    @Query('limit') limit: number,
-    @Query('search') search: string,
-    @Query('authorId') authorId: string,
-  ) {
-    return this.booksService.findAll({ page, limit, search, authorId });
+  findAll(@Query() query: QueryBooksDto) {
+    return this.booksService.findAll(query);
   }
 
   @Get(':id')

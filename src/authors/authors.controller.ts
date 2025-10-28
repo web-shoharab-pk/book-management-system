@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { AuthorsService } from './authors.service';
 import { CreateAuthorDto } from './dto/create-author.dto';
+import { QueryAuthorsDto } from './dto/query-authors.dto';
 import { UpdateAuthorDto } from './dto/update-author.dto';
 
 @Controller('authors')
@@ -23,12 +24,8 @@ export class AuthorsController {
   }
 
   @Get()
-  findAll(
-    @Query('page') page: number,
-    @Query('limit') limit: number,
-    @Query('search') search: string,
-  ) {
-    return this.authorsService.findAll({ page, limit, search });
+  findAll(@Query() query: QueryAuthorsDto) {
+    return this.authorsService.findAll(query);
   }
 
   @Get(':id')

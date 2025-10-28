@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
-@Schema({ timestamps: true })
+@Schema({ toJSON: { virtuals: true }, timestamps: true })
 export class Author extends Document {
   @Prop({ required: true })
   firstName: string;
@@ -19,7 +19,15 @@ export class Author extends Document {
 const AuthorSchema = SchemaFactory.createForClass(Author);
 
 AuthorSchema.virtual('id').get(function (this: Author) {
-  return this._id;
+  return (this._id as Types.ObjectId).toString();
+});
+
+AuthorSchema.set('toJSON', {
+  virtuals: true,
+  transform: function (doc: any, ret: any): void {
+    delete ret._id;
+    delete ret.__v;
+  },
 });
 
 export { AuthorSchema };

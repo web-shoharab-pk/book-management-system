@@ -2,13 +2,14 @@ import {
   IsDateString,
   IsISBN,
   IsMongoId,
+  IsNotEmpty,
   IsOptional,
   IsString,
 } from 'class-validator';
-import { Types } from 'mongoose';
 
 export class CreateBookDto {
   @IsString()
+  @IsNotEmpty()
   title: string;
 
   @IsString()
@@ -24,5 +25,5 @@ export class CreateBookDto {
   genre?: string;
 
   @IsMongoId()
-  authorId: Types.ObjectId;
+  authorId: string;
 }

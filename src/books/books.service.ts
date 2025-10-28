@@ -87,9 +87,9 @@ export class BooksService {
     if (updateBookDto.authorId) {
       await this.validateAuthor(updateBookDto.authorId);
     }
-    const update = { ...updateBookDto };
+    const update: any = { ...updateBookDto };
     if (updateBookDto.authorId) {
-      update['author'] = updateBookDto.authorId as unknown as Types.ObjectId;
+      update.author = new Types.ObjectId(updateBookDto.authorId);
       delete update.authorId;
     }
     const book = await this.bookModel
@@ -113,9 +113,9 @@ export class BooksService {
     return this.bookModel.find({ author: authorId }).populate('author').exec();
   }
 
-  private async validateAuthor(authorId: Types.ObjectId): Promise<void> {
+  private async validateAuthor(authorId: string): Promise<void> {
     try {
-      await this.authorsService.findOne(authorId.toString());
+      await this.authorsService.findOne(authorId);
     } catch {
       throw new BadRequestException('Invalid authorId: Author does not exist');
     }
