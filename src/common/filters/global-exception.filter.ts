@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-enum-comparison */
 import {
   ArgumentsHost,
   Catch,
@@ -86,8 +87,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const status = exception.getStatus();
       const exceptionResponse = exception.getResponse();
 
-      // Handle class-validator errors
+      // Handle class-validator errors (only for 400 Bad Request)
       if (
+        status === HttpStatus.BAD_REQUEST &&
         typeof exceptionResponse === 'object' &&
         'message' in exceptionResponse
       ) {
@@ -113,12 +115,24 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         });
       }
 
-      return response.status(status).json({
+      // Handle standard HTTP exceptions
+      const errorResponse: any = {
         statusCode: status,
         message: exception.message,
-        timestamp: new Date().toISOString(),
-        path: request.url,
-      });
+      };
+
+      // Add error field for standard HTTP status names
+      if (status === HttpStatus.NOT_FOUND) {
+        errorResponse.error = 'Not Found';
+      } else if (status === HttpStatus.BAD_REQUEST) {
+        errorResponse.error = 'Bad Request';
+      } else if (status === HttpStatus.CONFLICT) {
+        errorResponse.error = 'Conflict';
+      } else if (status === HttpStatus.UNPROCESSABLE_ENTITY) {
+        errorResponse.error = 'Unprocessable Entity';
+      }
+
+      return response.status(status).json(errorResponse);
     }
 
     // Handle other errors
