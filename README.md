@@ -2,97 +2,347 @@
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
+<p align="center">
+  <a href="http://nodejs.org" target="_blank"><img src="https://img.shields.io/badge/node-18.x-blue.svg" alt="Node Version" /></a>
+  <a href="https://www.mongodb.com" target="_blank"><img src="https://img.shields.io/badge/mongodb-latest-green.svg" alt="MongoDB" /></a>
+  <a href="https://www.npmjs.com" target="_blank"><img src="https://img.shields.io/badge/pnpm-package%20manager-orange.svg" alt="Package Manager" /></a>
 </p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+## 📚 Book Management System
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+A robust and scalable **Book Management System** built with **NestJS**, **MongoDB**, and **TypeScript**. This application provides comprehensive RESTful API endpoints for managing authors and books, featuring advanced validation, error handling, pagination, and search capabilities.
 
-## Project setup
+### 🚀 Features
 
-```bash
-$ pnpm install
-```
+- **Author Management**: Full CRUD operations for managing authors with search and pagination
+- **Book Management**: Complete book management with ISBN validation and author relationships
+- **Advanced Search**: Search authors and books by name, ISBN, or other criteria
+- **Pagination**: Efficient pagination for large datasets
+- **Data Validation**: Comprehensive input validation using `class-validator` and `class-transformer`
+- **Error Handling**: Global exception filter with detailed error messages
+- **Database Integration**: MongoDB integration with Mongoose ODM
+- **Environment Configuration**: Secure configuration management with validation
+- **Type Safety**: Full TypeScript support throughout the application
+- **Testing**: E2E tests with MongoDB Memory Server for isolated testing
 
-## Compile and run the project
+### 🛠 Tech Stack
 
-```bash
-# development
-$ pnpm run start
+- **Framework**: NestJS 11.x
+- **Language**: TypeScript
+- **Database**: MongoDB with Mongoose
+- **Validation**: class-validator, class-transformer, Joi
+- **Testing**: Jest, Supertest, MongoDB Memory Server
+- **Package Manager**: pnpm
 
-# watch mode
-$ pnpm run start:dev
+### 📋 Prerequisites
 
-# production mode
-$ pnpm run start:prod
-```
+- Node.js 18.x or higher
+- pnpm (preferred) or npm/yarn
+- MongoDB instance (local or remote)
 
-## Run tests
+### 🔧 Getting Started
 
-```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+#### 1. Install Dependencies
 
 ```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+pnpm install
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+#### 2. Environment Configuration
 
-## Resources
+Create a `.env` file in the root directory with the following variables:
 
-Check out a few resources that may come in handy when working with NestJS:
+```env
+NODE_ENV=development
+DATABASE_URI=mongodb://localhost:27017/bookdb
+PORT=1234
+API_PREFIX=api
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+**Note**: Replace `DATABASE_URI` with your MongoDB connection string. For cloud databases like MongoDB Atlas, use the provided connection string.
 
-## Support
+#### 3. Start the Application
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+**Development mode** (with hot reload):
 
-## Stay in touch
+```bash
+pnpm run start:dev
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+**Production mode**:
 
-## License
+```bash
+pnpm run build
+pnpm run start:prod
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+The application will start on `http://localhost:1234/api` by default.
+
+#### 4. Verify Installation
+
+Once the server is running, you should see:
+
+```
+Server is running on port 1234 in development mode
+url: http://localhost:1234
+```
+
+### 🧪 Testing
+
+#### Run Unit Tests
+
+```bash
+pnpm run test
+```
+
+#### Run E2E Tests
+
+```bash
+pnpm run test:e2e
+```
+
+**Note**: E2E tests use MongoDB Memory Server, so no real database connection is required.
+
+#### Generate Test Coverage Report
+
+```bash
+pnpm run test:cov
+```
+
+Coverage reports will be generated in the `coverage` directory. View the HTML report:
+
+```bash
+open coverage/lcov-report/index.html
+```
+
+### 📖 API Documentation
+
+Complete API documentation is available on Postman:
+
+🔗 **[View API Documentation](https://documenter.getpostman.com/view/16481716/2sB3Wnx2Tf)**
+
+#### Available Endpoints
+
+**Authors API**
+
+- `POST /api/authors` - Create a new author
+- `GET /api/authors` - Get all authors with pagination and search
+- `GET /api/authors/:id` - Get author by ID
+- `PATCH /api/authors/:id` - Update author
+- `DELETE /api/authors/:id` - Delete author
+
+**Books API**
+
+- `POST /api/books` - Create a new book
+- `GET /api/books` - Get all books with pagination, search, and author filtering
+- `GET /api/books/:id` - Get book by ID (includes author details)
+- `PATCH /api/books/:id` - Update book
+- `DELETE /api/books/:id` - Delete book
+
+#### Example Request
+
+**Create an Author:**
+
+```bash
+curl -X POST http://localhost:1234/api/authors \
+  -H "Content-Type: application/json" \
+  -d '{
+    "firstName": "Jane",
+    "lastName": "Austen",
+    "bio": "English novelist known primarily for her six major novels",
+    "birthDate": "1775-12-16"
+  }'
+```
+
+**Create a Book:**
+
+```bash
+curl -X POST http://localhost:1234/api/books \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Pride and Prejudice",
+    "isbn": "978-0-14-143951-8",
+    "genre": "Fiction",
+    "authorId": "<AUTHOR_ID>"
+  }'
+```
+
+**Search Books:**
+
+```bash
+curl "http://localhost:1234/api/books?search=pride&page=1&limit=10"
+```
+
+### 🏗 Project Structure
+
+```
+src/
+├── authors/              # Author module
+│   ├── dto/             # Data Transfer Objects
+│   ├── entities/        # TypeScript entities
+│   ├── schemas/         # Mongoose schemas
+│   ├── authors.controller.ts
+│   ├── authors.service.ts
+│   └── authors.module.ts
+├── books/               # Book module
+│   ├── dto/
+│   ├── entities/
+│   ├── schemas/
+│   ├── books.controller.ts
+│   ├── books.service.ts
+│   └── books.module.ts
+├── common/              # Shared utilities
+│   └── filters/         # Exception filters
+├── config/              # Configuration
+│   └── configuration.ts # Environment validation
+├── app.controller.ts    # Root controller
+├── app.service.ts       # Root service
+├── app.module.ts        # Root module
+└── main.ts              # Application entry point
+```
+
+### 🎯 Key Features Explained
+
+#### 1. **Advanced Validation**
+
+- Input validation using decorators (`@IsString`, `@IsNotEmpty`, `@IsISBN`, etc.)
+- Automatic request transformation and sanitization
+- Detailed validation error messages
+
+#### 2. **Global Exception Handling**
+
+- Centralized error handling with a global exception filter
+- Handles Mongoose validation errors, cast errors, and duplicate key errors
+- User-friendly error messages with proper HTTP status codes
+
+#### 3. **Pagination & Search**
+
+```typescript
+// Query parameters
+?page=1&limit=10&search=keyword
+```
+
+#### 4. **Data Relationships**
+
+- Books reference authors via MongoDB ObjectId
+- Automatic population of author details when fetching books
+- Referential integrity validation
+
+#### 5. **Environment Configuration**
+
+- Joi schema validation for environment variables
+- Type-safe configuration using ConfigService
+- Supports multiple environments (development, production)
+
+### 🚀 Future Improvements
+
+#### 1. **Authentication & Authorization**
+
+- Implement JWT-based authentication
+- Role-based access control (RBAC)
+- User management system
+- Protected API endpoints
+
+#### 2. **Advanced Features**
+
+- File upload for book covers and author photos
+- Book ratings and reviews system
+- Reading lists and favorites
+- Book lending/tracking system
+- Multi-language support
+
+#### 3. **Performance Enhancements**
+
+- Redis caching for frequently accessed data
+- Database indexing optimization
+- GraphQL API alongside REST
+- API rate limiting
+- Response compression
+
+#### 4. **Monitoring & Logging**
+
+- Structured logging with Winston or Pino
+- Integration with monitoring tools (Prometheus, Grafana)
+- Health check endpoints
+- Request logging middleware
+- Error tracking with Sentry
+
+#### 5. **Testing**
+
+- Increase unit test coverage
+- Add integration tests for complex workflows
+- Performance testing
+- Load testing
+
+#### 6. **Documentation**
+
+- OpenAPI/Swagger documentation generation
+- API versioning
+- Changelog and release notes
+- Contributing guidelines
+
+#### 7. **DevOps**
+
+- Docker containerization
+- CI/CD pipeline setup
+- Automated testing in CI
+- Deployment automation
+- Blue-green deployment strategy
+
+#### 8. **Data Management**
+
+- Database migrations
+- Data seeding scripts
+- Backup and restore functionality
+- Database replication for high availability
+
+#### 9. **Security Enhancements**
+
+- Helmet.js for security headers
+- CORS configuration
+- SQL injection prevention (for NoSQL-specific attacks)
+- XSS protection
+- Input sanitization
+
+#### 10. **Code Quality**
+
+- ESLint and Prettier configuration
+- Pre-commit hooks with Husky
+- Code review guidelines
+- Automated code quality checks
+
+### 📝 Scripts
+
+```bash
+# Development
+pnpm run start:dev      # Start in watch mode
+pnpm run start:debug    # Start in debug mode
+
+# Production
+pnpm run build          # Build the application
+pnpm run start:prod     # Start in production mode
+
+# Testing
+pnpm run test           # Run unit tests
+pnpm run test:watch     # Run tests in watch mode
+pnpm run test:cov       # Generate coverage report
+pnpm run test:e2e       # Run e2e tests
+
+# Code Quality
+pnpm run lint           # Run ESLint
+pnpm run format         # Format code with Prettier
+```
+
+### 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+### 📄 License
+
+This project is licensed under the MIT License.
+
+### 🙏 Acknowledgments
+
+- Built with [NestJS](https://nestjs.com)
+- MongoDB for data persistence
+- Community packages and contributors
